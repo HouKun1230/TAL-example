@@ -1,0 +1,38 @@
+?NOLIST
+?SOURCE $SYSTEM.SYSTEM.EXTDECS (OPEN, CLOSE, READ, WRITE, MYTERM)
+?LIST
+
+-- TAL Hello World with Input --
+PROC GREETUSER MAIN;
+BEGIN
+  INT    termname[0:11];      -- Terminal name buffer
+  INT    filenum;             -- File number for terminal
+  STRING input[0:31];         -- Buffer for user input
+  STRING output[0:79];        -- Output message buffer
+  INT    len;                 -- Length of input
+
+  -- Initialize system and get terminal name --
+  CALL INITIALIZER;
+  CALL MYTERM (termname);
+
+  -- Open terminal for I/O --
+  CALL OPEN (termname, filenum :FILETYPE = 1);  -- 1 = terminal
+
+  -- Prompt user --
+  CALL WRITE (filenum, "Enter your name: ", 17);
+
+  -- Read input (up to 32 chars) --
+  CALL READ (filenum, input, 32, len);
+
+  -- Build greeting --
+  CALL STRCPY (output, "Hello, ");
+  CALL STRCAT (output, input[0:len-1]);  -- Remove newline
+  CALL STRCAT (output, "! Welcome to TAL!");
+
+  -- Write greeting --
+  CALL WRITELN (filenum, output, STRLEN(output));
+
+  -- Close terminal --
+  CALL CLOSE (filenum);
+
+END;
